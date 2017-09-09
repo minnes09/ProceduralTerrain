@@ -1,0 +1,3 @@
+C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Source\ProceduralGame\ProceduralGame.Build.cs
+C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Source\ProceduralGame.Target.cs
+C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Source\ProceduralGameEditor.Target.cs

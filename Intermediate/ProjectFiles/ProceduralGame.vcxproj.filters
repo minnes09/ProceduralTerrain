@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<None Include="..\..\ProceduralGame.uproject" />
+		<Filter Include="Source">
+			<UniqueIdentifier>{85B4F392-22C4-4C8A-85AE-C4C6CC86FAE0}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Source\ProceduralGame.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<None Include="..\..\Source\ProceduralGameEditor.Target.cs">
+			<Filter>Source</Filter>
+		</None >
+		<Filter Include="Config">
+			<UniqueIdentifier>{11E79EAF-D2D0-4F52-815F-EC3455036C3C}</UniqueIdentifier>
+		</Filter>
+		<None Include="..\..\Config\DefaultEditor.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEditorPerProjectUserSettings.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultEngine.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultGame.ini">
+			<Filter>Config</Filter>
+		</None >
+		<None Include="..\..\Config\DefaultInput.ini">
+			<Filter>Config</Filter>
+		</None >
+		<Filter Include="Source\ProceduralGame">
+			<UniqueIdentifier>{FE2DB72B-1488-4B82-B302-290D4307F1FB}</UniqueIdentifier>
+		</Filter>
+		<ClCompile Include="..\..\Source\ProceduralGame\ConcreteProceduralTerrain.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ConcreteProceduralTerrain.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<None Include="..\..\Source\ProceduralGame\ProceduralGame.Build.cs">
+			<Filter>Source\ProceduralGame</Filter>
+		</None >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralGame.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralGame.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralGameCharacter.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralGameCharacter.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralGameGameMode.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralGameGameMode.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralGameHUD.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralGameHUD.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralGameProjectile.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralGameProjectile.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralPiramid.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralPiramid.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\ProceduralTerrain.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralTerrain.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+	</ItemGroup>
+</Project>

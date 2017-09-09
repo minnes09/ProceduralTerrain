@@ -1,0 +1,80 @@
+/MANIFEST:NO
+/NOLOGO
+/DEBUG
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/FIXED:No
+/NXCOMPAT
+/STACK:5000000
+/DELAY:UNLOAD
+/DLL
+/PDBALTPATH:%_PDB%
+/OPT:NOREF
+/OPT:NOICF
+/INCREMENTAL:NO
+/ignore:4199
+/ignore:4099
+/DELAYLOAD:"d3d12.dll"
+/NODEFAULTLIB:"LIBCMT"
+/NODEFAULTLIB:"LIBCPMT"
+/NODEFAULTLIB:"LIBCMTD"
+/NODEFAULTLIB:"LIBCPMTD"
+/NODEFAULTLIB:"MSVCRTD"
+/NODEFAULTLIB:"MSVCPRTD"
+/NODEFAULTLIB:"LIBC"
+/NODEFAULTLIB:"LIBCP"
+/NODEFAULTLIB:"LIBCD"
+/NODEFAULTLIB:"LIBCPD"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\PCH.ProceduralGame.h.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ConcreteProceduralTerrain.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGame.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameCharacter.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameGameMode.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameHUD.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameProjectile.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralPiramid.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralTerrain.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ConcreteProceduralTerrain.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGame.init.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameCharacter.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameGameMode.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameHUD.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralGameProjectile.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralPiramid.gen.cpp.obj"
+"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\ProceduralTerrain.gen.cpp.obj"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\ProceduralGame\PCLaunch.rc.res"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\ModuleVersionResource.rc.inl.res"
+"delayimp.lib"
+"wininet.lib"
+"rpcrt4.lib"
+"ws2_32.lib"
+"dbghelp.lib"
+"comctl32.lib"
+"Winmm.lib"
+"kernel32.lib"
+"user32.lib"
+"gdi32.lib"
+"winspool.lib"
+"comdlg32.lib"
+"advapi32.lib"
+"shell32.lib"
+"ole32.lib"
+"oleaut32.lib"
+"uuid.lib"
+"odbc32.lib"
+"odbccp32.lib"
+"netapi32.lib"
+"iphlpapi.lib"
+"setupapi.lib"
+"dwmapi.lib"
+"imm32.lib"
+"D:\Programmi\UE_4.17\Engine\Plugins\Runtime\ProceduralMeshComponent\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProceduralMeshComponent.lib"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Core.lib"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-CoreUObject.lib"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-Engine.lib"
+"D:\Programmi\UE_4.17\Engine\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-InputCore.lib"
+/OUT:"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Binaries\Win64\UE4Editor-ProceduralGame-7066.dll"
+/IMPLIB:"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Intermediate\Build\Win64\UE4Editor\Development\UE4Editor-ProceduralGame-7066.suppressed.lib"
+/PDB:"C:\Users\Gabriele\Documents\Unreal Projects\ProceduralGame 4.17\Binaries\Win64\UE4Editor-ProceduralGame-7066.pdb"
+/ignore:4078
