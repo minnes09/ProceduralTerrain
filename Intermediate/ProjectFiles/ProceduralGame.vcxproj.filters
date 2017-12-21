@@ -4,7 +4,7 @@
 	<ItemGroup>
 		<None Include="..\..\ProceduralGame.uproject" />
 		<Filter Include="Source">
-			<UniqueIdentifier>{85B4F392-22C4-4C8A-85AE-C4C6CC86FAE0}</UniqueIdentifier>
+			<UniqueIdentifier>{A7E8A1FD-FE54-45AD-B1DF-99E0D8EE3CC6}</UniqueIdentifier>
 		</Filter>
 		<None Include="..\..\Source\ProceduralGame.Target.cs">
 			<Filter>Source</Filter>
@@ -13,7 +13,7 @@
 			<Filter>Source</Filter>
 		</None >
 		<Filter Include="Config">
-			<UniqueIdentifier>{11E79EAF-D2D0-4F52-815F-EC3455036C3C}</UniqueIdentifier>
+			<UniqueIdentifier>{ED6E0E0C-DC56-4BC1-8DCC-DEFB86685BBB}</UniqueIdentifier>
 		</Filter>
 		<None Include="..\..\Config\DefaultEditor.ini">
 			<Filter>Config</Filter>
@@ -31,7 +31,7 @@
 			<Filter>Config</Filter>
 		</None >
 		<Filter Include="Source\ProceduralGame">
-			<UniqueIdentifier>{FE2DB72B-1488-4B82-B302-290D4307F1FB}</UniqueIdentifier>
+			<UniqueIdentifier>{D1999BF2-D767-482B-A615-A09354D59E71}</UniqueIdentifier>
 		</Filter>
 		<ClCompile Include="..\..\Source\ProceduralGame\ConcreteProceduralTerrain.cpp">
 			<Filter>Source\ProceduralGame</Filter>
@@ -82,6 +82,12 @@
 			<Filter>Source\ProceduralGame</Filter>
 		</ClCompile >
 		<ClInclude Include="..\..\Source\ProceduralGame\ProceduralTerrain.h">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClInclude >
+		<ClCompile Include="..\..\Source\ProceduralGame\SimplexNoiseLibrary.cpp">
+			<Filter>Source\ProceduralGame</Filter>
+		</ClCompile >
+		<ClInclude Include="..\..\Source\ProceduralGame\SimplexNoiseLibrary.h">
 			<Filter>Source\ProceduralGame</Filter>
 		</ClInclude >
 	</ItemGroup>

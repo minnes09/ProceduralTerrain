@@ -54,7 +54,7 @@ void EmptyLinkFunctionForGeneratedCodeProceduralPiramid() {}
 		check(OuterClass->GetClass());
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(AProceduralPiramid, 3760955355);
+	IMPLEMENT_CLASS(AProceduralPiramid, 2694128366);
 	static FCompiledInDefer Z_CompiledInDefer_UClass_AProceduralPiramid(Z_Construct_UClass_AProceduralPiramid, &AProceduralPiramid::StaticClass, TEXT("/Script/ProceduralGame"), TEXT("AProceduralPiramid"), false, nullptr, nullptr, nullptr);
 	DEFINE_VTABLE_PTR_HELPER_CTOR(AProceduralPiramid);
 PRAGMA_ENABLE_DEPRECATION_WARNINGS

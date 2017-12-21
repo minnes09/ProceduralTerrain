@@ -259,3 +259,12 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+#UE4 Framework
+/Binaries/
+/Intermediate/
+/Saved/
+/Build/
+/Content/StarterContent/
+/ProceduralGame.sdf
+/ProceduralGame.VC.db

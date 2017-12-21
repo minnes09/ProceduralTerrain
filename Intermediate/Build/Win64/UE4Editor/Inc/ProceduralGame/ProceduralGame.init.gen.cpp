@@ -21,8 +21,8 @@ void EmptyLinkFunctionForGeneratedCodeProceduralGame_init() {}
 			ReturnPackage = CastChecked<UPackage>(StaticFindObjectFast(UPackage::StaticClass(), nullptr, FName(TEXT("/Script/ProceduralGame")), false, false));
 			ReturnPackage->SetPackageFlags(PKG_CompiledIn | 0x00000000);
 			FGuid Guid;
-			Guid.A = 0xD73BE8BD;
-			Guid.B = 0xD48D2016;
+			Guid.A = 0x2607AD4F;
+			Guid.B = 0x7C9FE9C9;
 			Guid.C = 0x00000000;
 			Guid.D = 0x00000000;
 			ReturnPackage->SetGuid(Guid);

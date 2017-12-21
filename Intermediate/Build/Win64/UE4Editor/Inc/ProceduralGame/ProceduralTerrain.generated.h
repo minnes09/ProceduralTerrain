@@ -13,8 +13,30 @@ PRAGMA_DISABLE_DEPRECATION_WARNINGS
 #endif
 #define PROCEDURALGAME_ProceduralTerrain_generated_h
 
-#define ProceduralGame_4_17_Source_ProceduralGame_ProceduralTerrain_h_12_RPC_WRAPPERS
-#define ProceduralGame_4_17_Source_ProceduralGame_ProceduralTerrain_h_12_RPC_WRAPPERS_NO_PURE_DECLS
+#define ProceduralGame_4_17_Source_ProceduralGame_ProceduralTerrain_h_12_RPC_WRAPPERS \
+ \
+	DECLARE_FUNCTION(execGenerateNoise) \
+	{ \
+		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		*(int32*)Z_Param__Result=this->GenerateNoise(Z_Param_index); \
+		P_NATIVE_END; \
+	}
+
+
+#define ProceduralGame_4_17_Source_ProceduralGame_ProceduralTerrain_h_12_RPC_WRAPPERS_NO_PURE_DECLS \
+ \
+	DECLARE_FUNCTION(execGenerateNoise) \
+	{ \
+		P_GET_PROPERTY(UIntProperty,Z_Param_index); \
+		P_FINISH; \
+		P_NATIVE_BEGIN; \
+		*(int32*)Z_Param__Result=this->GenerateNoise(Z_Param_index); \
+		P_NATIVE_END; \
+	}
+
+
 #define ProceduralGame_4_17_Source_ProceduralGame_ProceduralTerrain_h_12_INCLASS_NO_PURE_DECLS \
 private: \
 	static void StaticRegisterNativesAProceduralTerrain(); \
