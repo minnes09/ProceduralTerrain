@@ -2,8 +2,36 @@
 
 #include "ProceduralGame.h"
 #include "SimplexNoiseLibrary.h"
+#include "Engine.h"
 #include "ConcreteProceduralTerrain.h"
 
+void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
+{
+	int x = chunkLineElements - 1;
+	int n = FMath::Log2(x);
+	while ( n % FMath::FloorToInt(n) != 0) {
+		chunkLineElements++;
+	}
+	chunkZElements = 80;
+	chunkTotalElements = chunkLineElements * chunkLineElements * chunkZElements;
+	chunkLineElementsP2 = chunkLineElements * chunkLineElements;
+	voxelSizeHalf = voxelSize / 2;
+
+
+	FString string = "Voxel: " + FString::FromInt(chunkXIndex) + "_" + FString::FromInt(chunkYIndex);
+	FName name = FName(*string);
+	proceduralComponent = NewObject<UProceduralMeshComponent>(this, name);
+	proceduralComponent->RegisterComponent();
+
+
+	RootComponent = proceduralComponent;
+	RootComponent->SetWorldTransform(Transform); //set position of root component
+												 //worldLocation = RootComponent->GetComponentLocation();
+	Super::Super::OnConstruction(Transform);
+
+	GenerateChunck();
+	UpdateMesh();
+}
 void AConcreteProceduralTerrain::UpdateMesh() {
 	
 	/*TArray<FVector> Vertices;
@@ -66,9 +94,9 @@ void AConcreteProceduralTerrain::UpdateMeshPlain()
 				//FColor color = FColor(RandomStream.FRand() * 256, RandomStream.FRand() * 256, RandomStream.FRand() * 256, rand() % 5);
 				FColor color = FColor(255, 255, 255, 1);
 				VertexColors.Add(color);
-				VertexColors.Add(color);
-				VertexColors.Add(color);
-				VertexColors.Add(color);
+				VertexColors.Add(FColor::White);
+				VertexColors.Add(FColor::Blue);
+				VertexColors.Add(FColor::Emerald);
 				}
 			elementID += 4;
 			}
@@ -87,7 +115,7 @@ void AConcreteProceduralTerrain::UpdateMesh4() {
 	TArray<FProcMeshTangent> Tangents;
 	TArray<FColor> VertexColors;
 
-	TArray<float> noise = GenerateNoiseArray();
+	noise = GenerateNoiseArray();
 	//noise = SmoothNoise(noise);
 	int32 index = 0;
 	for (int32 x = 0; x < chunkLineElements; x += 4) {
@@ -121,7 +149,6 @@ void AConcreteProceduralTerrain::UpdateMesh4() {
 
 //size must be multiple of 2
 TArray<float> AConcreteProceduralTerrain::GenerateNoiseArray(){
-	TArray<float> noise;
 	noise.SetNumUninitialized(chunkLineElementsP2);
 	/*int32 offNoise = (FMath::Sin(worldLocation.X * xMult) + FMath::Cos(worldLocation.Y * yMult)) * 4 - randomSeed % 64 + FMath::Tan(randomSeed) * FMath::Sin(randomSeed %128);
 	noise[0] =  offNoise + randomSeed % 128 * FMath::Tan(offNoise - randomSeed);
@@ -168,8 +195,8 @@ bool AConcreteProceduralTerrain::isFaceVisible()
 
 int32 AConcreteProceduralTerrain::GenerateNoise(int32 index) {
 	float fNoise = index;
-	int32 noise = (int32)fNoise;
-	return noise;
+	int32 iNoise = (int32)fNoise;
+	return iNoise;
 }
 
 int32 AConcreteProceduralTerrain::GenerateNoise(int32 x, int32 y, int32 z) {
@@ -179,12 +206,11 @@ int32 AConcreteProceduralTerrain::GenerateNoise(int32 x, int32 y, int32 z) {
 
 	float fNoise = FMath::Cos(x) * FMath::Cos(y) + x*y*z*chunkTotalElements;
 	fNoise = fNoise + noiseX + noiseY;
-	int32 noise = (int32)fNoise;
-	return noise;
+	int32 iNoise = (int32)fNoise;
+	return iNoise;
 }
 
 TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex() {
-	TArray<float> noise;
 	noise.SetNumZeroed(chunkLineElementsP2);
 	//float perc = 0.3f;
 	noise[0] = USimplexNoiseLibrary::SimplexNoise2D(chunkXIndex, chunkYIndex);
@@ -207,30 +233,136 @@ TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex() {
 /*
 frequency must be very low
 */
-TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex(float frequency) {
-	TArray<float> noise;
+TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex(float f) {
 	noise.SetNumZeroed(chunkLineElementsP2);
 	for (int32 x = 0; x < chunkLineElements; x++)
 	{
 		for (int32 y = 0; y < chunkLineElements; y++)
 		{
 			int index = x * chunkLineElements + y;
-			float Xval = x * voxelSize * frequency;
-			float Yval = y * voxelSize * frequency;
+			float Xval = x * voxelSize * f;
+			float Yval = y * voxelSize * f;
 			noise[index] = CalculatePointNoise(Xval, Yval, iterations);
 		}
 	}
 	return noise;
 }
-float AConcreteProceduralTerrain::CalculatePointNoise(float x, float y, int32 iterations)
+TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayRecursive()
+{
+	noise.SetNumZeroed(chunkLineElementsP2);
+	GenerateNoiseArrayRecursive(iterations);
+	return noise;
+}
+
+void AConcreteProceduralTerrain::GenerateNoiseArrayRecursive(float f)
+{
+	if(f > 2)
+		GenerateNoiseArrayRecursive(f / 2);
+	for (int x = 0; x < chunkLineElements; x++) {
+		for (int y = 0; y < chunkLineElements; x++) {
+			int index = x * chunkLineElements + y;
+			noise[index] += USimplexNoiseLibrary::SimplexNoise2D(x, y) / f;
+		}
+	}
+}
+
+
+float AConcreteProceduralTerrain::CalculatePointNoise(float x, float y, int32 itr)
 {
 	float pointNoise = 0;
-	for (int32 i = 0; i < iterations; i++) {
+	for (int32 i = 0; i < itr; i++) {
 		int32 power = FMath::Pow(2, i);
 		pointNoise += ( FMath::Pow(2, -i) * USimplexNoiseLibrary::SimplexNoise2D(power * x, power * y) * maxAltitude );
 	}
 	return pointNoise;
 }
+int AConcreteProceduralTerrain::GetGridPosition(int x, int y)
+{
+	return x + chunkLineElements * y;
+}
+TArray<float> AConcreteProceduralTerrain::GenerateSquareNoiseArray()
+{
+	noise.SetNumZeroed(chunkLineElementsP2);
+	int start = 0;
+	int size = chunkLineElements - 1;
+	int step = size;
+	if (step % 2 != 0) {
+		UE_LOG(LogClass, Error, TEXT("step is not multiple of 2"));
+	}
+	//Diamond Square Algorithm
+	InitDiamondSquare(start, start, size, size);
+	while (step > 1) {
+		int half = step / 2;
+		
+		for (int x = half; x < size; x += step) {
+			for (int y = half; y < size; y += step) {
+				offset = USimplexNoiseLibrary::SimplexNoise2D(x, y) * heightRange;
+				DiamondSquare(x, y, half, offset);
+ 			}
+		}
+		step = half;
+		heightRange /= 2;
+	}
+	
+	return noise;
+}
+
+void AConcreteProceduralTerrain::InitDiamondSquare(int startX, int startY, int endX,int endY)
+{
+	//4 corners
+	noise[GetGridPosition(startX, startY)] = FMath::FRandRange(-maxAltitude, maxAltitude);
+	noise[GetGridPosition(startX, endY)] = FMath::FRandRange(-maxAltitude, maxAltitude);
+	noise[GetGridPosition(endX, startY)] = FMath::FRandRange(-maxAltitude, maxAltitude);
+	noise[GetGridPosition(endX, endY)] = FMath::FRandRange(-maxAltitude, maxAltitude);
+	/*float x1 = chunkXIndex - 0.5f;
+	float y1 = chunkYIndex - 0.5f;
+	float x2 = chunkXIndex + 0.5f;
+	float y2 = chunkYIndex - 0.5f;
+	noise[startX + chunkLineElements * startY] = ((x1 + y1) * (randomSeed % maxAltitude)) + maxAltitude + PseudoRandomOffset(x1, y1);
+	noise[startX + chunkLineElements * endY] = ((x1 + y2) * (randomSeed % maxAltitude)) + maxAltitude + PseudoRandomOffset(x1, y2);
+	noise[endX + chunkLineElements * startY] = ((x2 + y1) * (randomSeed % maxAltitude)) + maxAltitude + PseudoRandomOffset(x2, y1);
+	noise[endX + chunkLineElements * endY] = ((x2 + y2) * (randomSeed % maxAltitude)) + maxAltitude + PseudoRandomOffset(x2, y2);*/
+}
+
+
+TArray<float> AConcreteProceduralTerrain::DiamondSquare(int x, int y, int half, int range)
+{
+	float a = noise[GetGridPosition(x - half, y - half)];
+	float b = noise[GetGridPosition(x + half, y - half)];
+	float c = noise[GetGridPosition(x + half, y + half)];
+	float d = noise[GetGridPosition(x - half, y + half)];
+	
+	//diamond
+	float e = (a + b + c + d) * 0.25f;
+	noise[GetGridPosition(x, y)] = e + FMath::FRandRange(-range, range);
+
+	//square
+	noise[GetGridPosition(x - half, y)] = (a + d + e) / 3 + FMath::FRandRange(-range, range);
+	noise[GetGridPosition(x, y + half)] = (c + d + e) / 3 + FMath::FRandRange(-range, range);
+	noise[GetGridPosition(x + half, y)] = (b + c + e) / 3 + FMath::FRandRange(-range, range);
+	noise[GetGridPosition(x, y - half)] = (a + b + e) / 3 + FMath::FRandRange(-range, range);
+	return noise;
+}
+
+TArray<float> AConcreteProceduralTerrain::Square(int step)
+{
+
+	return TArray<float>();
+}
+
+TArray<float> AConcreteProceduralTerrain::Diamond(int step)
+{
+	return TArray<float>();
+}
+
+float AConcreteProceduralTerrain::PseudoRandomOffset(float x, float y)
+{
+	float cosX = FMath::Cos(x + y);
+	float sinX = FMath::Sin(x + y);
+	float cosY = FMath::Cos(randomSeed);
+	return (cosX + sinX + cosY) * offset;
+}
+
 /*
 TArray<float> AConcreteProceduralTerrain::SmoothNoise_Implementation(TArray<float> noise)
 {
@@ -248,7 +380,7 @@ void AConcreteProceduralTerrain::UpdateMeshFirstVertices(int section) { //WORKS
 	TArray<FProcMeshTangent> Tangents;
 	TArray<FColor> VertexColors;
 
-	TArray<float> noise = GenerateNoiseArrayWithSimplex(frequency);
+	noise = GenerateSquareNoiseArray();
 	FColor color = FColor(148, 62, 15, 1);
 	for (int32 i = 0; i < chunkLineElements; i++) {
 		for (int32 j = 0; j < chunkLineElements; j++) {

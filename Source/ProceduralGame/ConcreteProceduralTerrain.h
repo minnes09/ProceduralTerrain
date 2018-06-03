@@ -20,6 +20,14 @@ public:
 		float frequency = 0.005;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
 		int iterations = 3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+		float heightRange = 50;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+		int offset = 0;
+	//array for the altitude
+	TArray<float> noise;
+
+	void OnConstruction(const FTransform & Transform) override;
 
 	void UpdateMesh();
 
@@ -40,8 +48,20 @@ public:
 
 	TArray<float> GenerateNoiseArray();
 	TArray<float> GenerateNoiseArrayWithSimplex();
-	TArray<float> GenerateNoiseArrayWithSimplex(float frequency);
+	TArray<float> GenerateNoiseArrayWithSimplex(float f);
+	TArray<float> GenerateNoiseArrayRecursive();
+	void GenerateNoiseArrayRecursive(float f);
 	float CalculatePointNoise(float x, float y, int32 iterations);
+
+	int GetGridPosition( int x, int y);
+
+	TArray<float> GenerateSquareNoiseArray();
+	void InitDiamondSquare(int startX, int startY, int endX, int endY);
+	TArray<float> DiamondSquare(int x, int y, int half, int range);
+	TArray<float> Square(int step);
+	TArray<float> Diamond( int step);
+
+	float PseudoRandomOffset(float x, float y);
 	/*UFUNCTION(BlueprintNativeEvent, category="Procedural")
 	TArray<float> SmoothNoise(TArray<float> noise);
 	virtual TArray<float> SmoothNoise_Implementation(TArray<float> noise);*/
