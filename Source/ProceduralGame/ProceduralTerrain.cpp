@@ -3,6 +3,7 @@
 #include "ProceduralGame.h"
 #include "ProceduralTerrain.h"
 
+
 const int32 bTriangles[] = { 2, 1, 0, 0, 3, 2 };
 const FVector2D bUvs[] = { FVector2D(0.000000, 0.000000), FVector2D(1.000000, 1.000000), FVector2D(0.000000, 1.000000), FVector2D(1.000000, 0.000000)};
 const FVector bNormals0[] = { FVector(0,0,1), FVector(0,0,1), FVector(0,0,1), FVector(0,0,1) };
@@ -81,18 +82,8 @@ void AProceduralTerrain::GenerateChunck()
 		{
 			for (int32 z = 0; z < chunkZElements; z++)
 			{
-				//index = x + (y * chunkLineElements) + (z * chunkLineElementsP2);
-				int32 noise = GenerateNoise(x,y,z);
-				if(index > 0)
-					noise = noise + (int32)chunkFields[index - 1];
-				/*
-				if (index == -1) 
-					index = 0;
-				if(index >= 0 && index < (int32)chunkFields.GetAllocatedSize())
-					chunkFields[index] = (z < 30 + noise) ? 1 : 0;
-				else printf("index out of range");*/
-				chunkFields[index] = (z < 30 + noise) ? 1 : 0;
-				index++;
+				index = x + (y * chunkLineElements) + (z * chunkLineElementsP2);			
+				chunkFields[index] = (z < 30) ? 1 : 0;
 			}
 		}
 	}
@@ -213,7 +204,7 @@ void AProceduralTerrain::UpdateMesh()
 			}
 		}
 	}
-	proceduralComponent->ClearAllMeshSections();
+	//proceduralComponent->ClearAllMeshSections();
 	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
 
 

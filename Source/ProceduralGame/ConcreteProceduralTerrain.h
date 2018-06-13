@@ -17,13 +17,15 @@ class PROCEDURALGAME_API AConcreteProceduralTerrain : public AProceduralTerrain
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural", Meta = (ExposeOnSpawn = true))
-		float frequency = 0.005;
+		float lacunarity = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
-		int iterations = 3;
+		int iterations = 4;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
 		float heightRange = 50;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
-		int offset = 0;
+		float persistence = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural Parameters")
+		UMaterialInterface* Material;
 	//array for the altitude
 	TArray<float> noise;
 
