@@ -7,11 +7,11 @@
 
 void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 {
-	int x = chunkLineElements - 1;
+	/*int x = chunkLineElements - 1;
 	int n = FMath::Log2(x);
 	while ( n % FMath::FloorToInt(n) != 0) {
 		chunkLineElements++;
-	}
+	}*/
 	chunkZElements = 80;
 	chunkTotalElements = chunkLineElements * chunkLineElements * chunkZElements;
 	chunkLineElementsP2 = chunkLineElements * chunkLineElements;
@@ -33,23 +33,44 @@ void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 }
 void AConcreteProceduralTerrain::UpdateMesh() {
 	
-	/*TArray<FVector> Vertices;
+	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FVector2D> UVs;
 	TArray<FProcMeshTangent> Tangents;
 	TArray<FColor> VertexColors;
 
-	TArray<float> noise = GenerateNoiseArray();
-	int32 z = 0;
-	for (int32 x = 0; x < chunkLineElements; x++) {
-		for (int32 y = 0; y < chunkLineElements; y++) {
-			CreateSingleSquare(x, y, noise[z], &Vertices, &Triangles, &Normals, &UVs, &Tangents, &VertexColors);
-			if(z < noise.Num() - 1 ) z++;
+	//noise = GenerateSquareNoiseArray();
+	noise = GeneratePerlinNoiseArray();
+	for (int32 i = 0; i < chunkLineElements; i++) {
+		for (int32 j = 0; j < chunkLineElements; j++) {
+			//float z = USimplexNoiseLibrary::SimplexNoise2D(i * chunkLineElements, j) * 1000;
+			float noiseHeight = noise[i * chunkLineElements + j];
+			Vertices.Add(FVector(i * voxelSize, j * voxelSize, noiseHeight));
+			int32 c = FMath::Lerp(255,0, noiseHeight);
+			FColor color = FColor(c, c, c);
+			VertexColors.Add(color);
 		}
 	}
-	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);*/
-	UpdateMeshFirstVertices(0);
+	int32 tri_length = Vertices.Num() - chunkLineElements - 1;
+
+	//loop for triangles, I arrive at length -1 so I skip the borders
+	for (int32 x = 0; x < chunkLineElements - 1; x++) {
+		for (int32 y = 0; y < chunkLineElements - 1; y++) {
+			int32 realX = x * chunkLineElements;
+			Triangles.Add(realX + chunkLineElements + y + 1); //(x + 1), (y + 1)
+			Triangles.Add(realX + chunkLineElements + y); //(x + 1), y
+			Triangles.Add(realX + y);//x, y
+			Triangles.Add(realX + y);//x, y
+			Triangles.Add(realX + y + 1); //x, (y + 1)
+			Triangles.Add(realX + chunkLineElements + y + 1);//(x + 1), (y + 1)
+		}
+	}
+
+	proceduralComponent->ClearAllMeshSections();
+	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
+	proceduralComponent->SetMaterial(0, Material);
+	//UpdateMeshFirstVertices(0);
 }
 
 void AConcreteProceduralTerrain::UpdateMeshPlain()
@@ -209,7 +230,7 @@ int32 AConcreteProceduralTerrain::GenerateNoise(int32 x, int32 y, int32 z) {
 	return iNoise;
 }
 
-TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex() {
+TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 	noise.Init(0, chunkLineElementsP2);
 
 	
@@ -224,13 +245,13 @@ TArray<float> AConcreteProceduralTerrain::GenerateNoiseArrayWithSimplex() {
 			float noiseHeight = 0;
 
 			for (int itr = 1; itr <= iterations; itr++) {
-				float sampleX = (chunkXIndex * chunkLineElements + x) * frequency / itr;
-				float sampleY = (chunkYIndex * chunkLineElements + y) * frequency / itr;
-				float perlinValue = USimplexNoiseLibrary::SimplexNoise2D(sampleX,sampleY);
-				noiseHeight += perlinValue;
+				float sampleX = (chunkXIndex * chunkLineElements + x) / freq * frequency;
+				float sampleY = (chunkYIndex * chunkLineElements + y) / freq * frequency;
+				float perlinValue = USimplexNoiseLibrary::SimplexNoise2D(sampleX,sampleY) * 2 - 1;
+				noiseHeight += perlinValue * amplitude;
 
-				/*amplitude *= persistence;
-				frequency *= lacunarity;*/
+				amplitude *= persistence;
+				frequency *= lacunarity;
 			}
 			noise[index] = noiseHeight * maxAltitude;
 		}
@@ -388,7 +409,7 @@ void AConcreteProceduralTerrain::UpdateMeshFirstVertices(int section) { //WORKS
 	TArray<FColor> VertexColors;
 
 	//noise = GenerateSquareNoiseArray();
-	noise = GenerateNoiseArrayWithSimplex();
+	noise = GeneratePerlinNoiseArray();
 	FColor color = FColor::Blue;
 	for (int32 i = 0; i < chunkLineElements; i++) {
 		for (int32 j = 0; j < chunkLineElements; j++) {
@@ -469,12 +490,12 @@ void AConcreteProceduralTerrain::CreateSingleSquare(int32 x, int32 y, int32 z, T
 	Vertices->Add(FVector((x + 1) * voxelSize, (y + 1) * voxelSize, voxelSize * z));
 	Vertices->Add(FVector(x * voxelSize, (y + 1)  * voxelSize, voxelSize * z));
 
-	Triangles->Add(verticesLength + 2);
-	Triangles->Add(verticesLength + 1);
-	Triangles->Add(verticesLength);
-	Triangles->Add(verticesLength);
-	Triangles->Add(verticesLength + 3);
-	Triangles->Add(verticesLength + 2);
+	Triangles->Add(2);
+	Triangles->Add(1);
+	Triangles->Add(0);
+	Triangles->Add(0);
+	Triangles->Add(3);
+	Triangles->Add(2);
 
 	FColor color = FColor(255, 255, 255, 1);
 	VertexColors->Add(color);

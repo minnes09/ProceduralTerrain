@@ -16,15 +16,15 @@ class PROCEDURALGAME_API AConcreteProceduralTerrain : public AProceduralTerrain
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural", Meta = (ExposeOnSpawn = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", Meta = (ExposeOnSpawn = true))
 		float lacunarity = 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "1", UIMin = "1", ExposeOnSpawn = true))
 		int iterations = 4;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin")
 		float heightRange = 50;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0", ))
 		float persistence = 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
 		UMaterialInterface* Material;
 	//array for the altitude
 	TArray<float> noise;
@@ -49,7 +49,7 @@ public:
 	void UpdateMesh4();
 
 	TArray<float> GenerateNoiseArray();
-	TArray<float> GenerateNoiseArrayWithSimplex();
+	TArray<float> GeneratePerlinNoiseArray();
 	TArray<float> GenerateNoiseArrayWithSimplex(float f);
 	TArray<float> GenerateNoiseArrayRecursive();
 	void GenerateNoiseArrayRecursive(float f);

@@ -35,8 +35,8 @@ public:
 		float zMult = 0.1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0"))
 		int32 weight = 1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
-		int32 freq = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural", meta = (ClampMin = "0.00000001", UIMin = "0.0001"))
+		float freq = 1;
 	UPROPERTY()
 		int32 chunkTotalElements;
 	UPROPERTY()
