@@ -232,7 +232,13 @@ int32 AConcreteProceduralTerrain::GenerateNoise(int32 x, int32 y, int32 z) {
 
 TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 	noise.Init(0, chunkLineElementsP2);
-
+	FRandomStream RngStream = FRandomStream::FRandomStream(randomSeed);
+	TArray<FVector2D> octaveOffset;
+	for (int i = 0; i < iterations; i++) {
+		float offsetX = RngStream.FRandRange(-10000, 10000);
+		float offsetY = RngStream.FRandRange(-10000, 10000);
+		octaveOffset.Add(FVector2D(offsetX, offsetY));
+	}
 	
 	for (int32 x = 0; x < chunkLineElements; x++)
 	{
@@ -244,10 +250,10 @@ TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 			float amplitude = 1;
 			float noiseHeight = 0;
 
-			for (int itr = 1; itr <= iterations; itr++) {
-				float sampleX = (chunkXIndex * chunkLineElements + x) / freq * frequency;
-				float sampleY = (chunkYIndex * chunkLineElements + y) / freq * frequency;
-				float perlinValue = USimplexNoiseLibrary::SimplexNoise2D(sampleX,sampleY) * 2 - 1;
+			for (int itr = 0; itr < iterations; itr++) {
+				float sampleX = (chunkXIndex * chunkLineElements + x) / freq * frequency + octaveOffset[itr].X;
+				float sampleY = (chunkYIndex * chunkLineElements + y) / freq * frequency + octaveOffset[itr].Y;
+				float perlinValue = USimplexNoiseLibrary::SimplexNoise2D(sampleX,sampleY) * 2 - 1; //range (-1,1)
 				noiseHeight += perlinValue * amplitude;
 
 				amplitude *= persistence;

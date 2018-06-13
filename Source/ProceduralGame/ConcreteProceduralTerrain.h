@@ -22,7 +22,7 @@ public:
 		int iterations = 4;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin")
 		float heightRange = 50;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0", ))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0", ExposeOnSpawn = true))
 		float persistence = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
 		UMaterialInterface* Material;
