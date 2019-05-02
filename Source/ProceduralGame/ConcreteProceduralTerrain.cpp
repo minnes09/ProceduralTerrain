@@ -409,11 +409,13 @@ float AConcreteProceduralTerrain::PseudoRandomOffset(float x, float y)
 FColor AConcreteProceduralTerrain::ComputeVertexColor(float h)
 {
 	//int32 c = FMath::Lerp(0, maxAltitude, h);
-	int32 biomeDivisor = maxAltitude / colors.Num();
-	for (int32 i = 1; i < colors.Num(); ++i) {
-		if (h <= i * biomeDivisor) return colors[i - 1];
+	auto numColors = colors.Num();
+	int32 pos = 0;
+	int32 biomeDivisor = maxAltitude / numColors;
+	for (int32 i = -numColors; i < numColors; i=i+2, pos++) {
+		if (h <= i * biomeDivisor) return colors[pos];
 	}
-	return FColor::Magenta;
+	return colors[numColors -1];
 }
 
 /*
