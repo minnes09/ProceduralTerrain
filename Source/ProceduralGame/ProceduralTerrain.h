@@ -47,7 +47,7 @@ public:
 		int32 voxelSizeHalf;
 	UPROPERTY()
 		TArray<float> chunkFields;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	class UProceduralMeshComponent * proceduralComponent;
 
 	FVector worldLocation = FVector(0, 0, 0);

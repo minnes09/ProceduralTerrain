@@ -16,6 +16,8 @@ class PROCEDURALGAME_API AConcreteProceduralTerrain : public AProceduralTerrain
 	GENERATED_BODY()
 
 public:
+
+	AConcreteProceduralTerrain();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", Meta = (ExposeOnSpawn = true))
 		float lacunarity = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "1", UIMin = "1", ExposeOnSpawn = true))
@@ -25,7 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0", ExposeOnSpawn = true))
 		float persistence = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
-		UMaterialInterface* Material;
+		UMaterial* Material;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+		TArray<FColor> colors;
 	//array for the altitude
 	TArray<float> noise;
 
@@ -67,4 +71,6 @@ public:
 	/*UFUNCTION(BlueprintNativeEvent, category="Procedural")
 	TArray<float> SmoothNoise(TArray<float> noise);
 	virtual TArray<float> SmoothNoise_Implementation(TArray<float> noise);*/
+
+	FColor ComputeVertexColor(float height);
 };

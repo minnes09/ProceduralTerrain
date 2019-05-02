@@ -5,12 +5,13 @@ using System.Collections.Generic;
 
 public class ProceduralGameEditorTarget : TargetRules
 {
-	public ProceduralGameEditorTarget(TargetInfo Target)
+	public ProceduralGameEditorTarget(TargetInfo Target): base (Target)
 	{
 		Type = TargetType.Editor;
-	}
+        ExtraModuleNames.Add("ProceduralGame");
+    }
 
-	//
+	/*//
 	// TargetRules interface.
 	//
 
@@ -21,5 +22,5 @@ public class ProceduralGameEditorTarget : TargetRules
 		)
 	{
 		OutExtraModuleNames.Add("ProceduralGame");
-	}
+	}*/
 }

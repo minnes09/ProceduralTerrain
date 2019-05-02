@@ -5,6 +5,18 @@
 #include "Engine.h"
 #include "ConcreteProceduralTerrain.h"
 
+AConcreteProceduralTerrain::AConcreteProceduralTerrain() 
+{
+
+	proceduralComponent = CreateDefaultSubobject<UProceduralMeshComponent>("ProceduralMeshComponent");
+	/*static ConstructorHelpers::FObjectFinder<UMaterial> MaterialOb(TEXT("Material'/Game/Blueprints/ChunkTerrain.ChunkTerrain'"));
+	Material = MaterialOb.Object;*/
+	colors.Add(FColor(255, 23, 7));
+	colors.Add(FColor(141, 182, 7));
+	colors.Add(FColor(0, 132, 255));
+	colors.Add(FColor(255, 250, 250));
+}
+
 void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 {
 	/*int x = chunkLineElements - 1;
@@ -16,19 +28,17 @@ void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 	chunkTotalElements = chunkLineElements * chunkLineElements * chunkZElements;
 	chunkLineElementsP2 = chunkLineElements * chunkLineElements;
 	voxelSizeHalf = voxelSize / 2;
+
 	noise.Init(0, chunkLineElementsP2);
 	FString string = "Voxel: " + FString::FromInt(chunkXIndex) + "_" + FString::FromInt(chunkYIndex);
 	FName name = FName(*string);
-	proceduralComponent = NewObject<UProceduralMeshComponent>(this, name);
-	proceduralComponent->RegisterComponent();
-
-
+	
 	RootComponent = proceduralComponent;
 	RootComponent->SetWorldTransform(Transform); //set position of root component
 												 //worldLocation = RootComponent->GetComponentLocation();
 	Super::Super::OnConstruction(Transform);
 
-	GenerateChunck();
+	//GenerateChunck();
 	UpdateMesh();
 }
 void AConcreteProceduralTerrain::UpdateMesh() {
@@ -47,9 +57,7 @@ void AConcreteProceduralTerrain::UpdateMesh() {
 			//float z = USimplexNoiseLibrary::SimplexNoise2D(i * chunkLineElements, j) * 1000;
 			float noiseHeight = noise[i * chunkLineElements + j];
 			Vertices.Add(FVector(i * voxelSize, j * voxelSize, noiseHeight));
-			int32 c = FMath::Lerp(255,0, noiseHeight);
-			FColor color = FColor(c, c, c);
-			VertexColors.Add(color);
+			VertexColors.Add(ComputeVertexColor(noiseHeight));
 		}
 	}
 	int32 tri_length = Vertices.Num() - chunkLineElements - 1;
@@ -67,8 +75,9 @@ void AConcreteProceduralTerrain::UpdateMesh() {
 		}
 	}
 
-	proceduralComponent->ClearAllMeshSections();
+	//proceduralComponent->ClearAllMeshSections();
 	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
+	//proceduralComponent->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
 	proceduralComponent->SetMaterial(0, Material);
 	//UpdateMeshFirstVertices(0);
 }
@@ -397,6 +406,16 @@ float AConcreteProceduralTerrain::PseudoRandomOffset(float x, float y)
 	return (cosX + sinX + cosY);
 }
 
+FColor AConcreteProceduralTerrain::ComputeVertexColor(float h)
+{
+	//int32 c = FMath::Lerp(0, maxAltitude, h);
+	int32 biomeDivisor = maxAltitude / colors.Num();
+	for (int32 i = 1; i < colors.Num(); ++i) {
+		if (h <= i * biomeDivisor) return colors[i - 1];
+	}
+	return FColor::Magenta;
+}
+
 /*
 TArray<float> AConcreteProceduralTerrain::SmoothNoise_Implementation(TArray<float> noise)
 {
@@ -448,7 +467,7 @@ void AConcreteProceduralTerrain::UpdateMeshFirstVertices(int section) { //WORKS
 
 	proceduralComponent->ClearAllMeshSections();
 	proceduralComponent->CreateMeshSection(section, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
-	proceduralComponent->SetMaterial(0, Material);
+	//proceduralComponent->SetMaterial(0, Material);
 }
 
 void AConcreteProceduralTerrain::CreateSingleSquareSection(int section) {
