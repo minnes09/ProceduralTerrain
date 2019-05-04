@@ -47,7 +47,7 @@ void AProceduralTerrain::Tick( float DeltaTime )
 
 void AProceduralTerrain::OnConstruction(const FTransform & Transform)
 {
-	while (chunkLineElements % 2 != 0) {
+	/*while (chunkLineElements % 2 != 0) {
 		chunkLineElements++;
 	}
 	chunkZElements = 80;
@@ -68,7 +68,7 @@ void AProceduralTerrain::OnConstruction(const FTransform & Transform)
 	Super::OnConstruction(Transform);
 
 	GenerateChunck();
-	UpdateMesh();
+	UpdateMesh();*/
 }
 
 void AProceduralTerrain::GenerateChunck()
