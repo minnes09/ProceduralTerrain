@@ -170,8 +170,8 @@ TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 	FRandomStream RngStream = FRandomStream::FRandomStream(randomSeed);
 	TArray<FVector2D> octaveOffset;
 	for (int i = 0; i < iterations; i++) {
-		float offsetX = RngStream.FRandRange(-10000, 10000);
-		float offsetY = RngStream.FRandRange(-10000, 10000);
+		float offsetX = RngStream.FRandRange(-freq, freq);
+		float offsetY = RngStream.FRandRange(-freq, freq);
 		octaveOffset.Add(FVector2D(offsetX, offsetY));
 	}
 	
@@ -194,7 +194,7 @@ TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 				amplitude *= persistence;
 				frequency *= lacunarity;
 			}
-			noise[index] = noiseHeight * maxAltitude;
+			noise[index] = noiseHeight *maxAltitude;
 		}
 	}
 	return noise;
