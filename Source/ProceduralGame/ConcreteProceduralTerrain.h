@@ -33,7 +33,8 @@ public:
 		TArray<FColor> colors;
 	//array for the altitude
 	TArray<float> noise;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Noise")
+		bool diamondSquare;
 	//mesh elements
 	UPROPERTY()
 		TArray<FVector> Vertices;
@@ -48,6 +49,7 @@ public:
 	UPROPERTY()
 		TArray<FProcMeshTangent> Tangents;
 
+
 	void ClearMeshData();
 	void OnConstruction(const FTransform & Transform) override;
 
@@ -60,7 +62,7 @@ public:
 	int32 GenerateNoise(int32 x, int32 y, int32 z);
 
 	void CreateSingleSquareSection(int section);
-	void CreateSingleSquare(int32 x, int32 y, int32 z, TArray<FVector>* Vertices, TArray<int32>* Triangles, TArray<FVector>* Normals, TArray<FVector2D>* UVs, TArray<FProcMeshTangent>* Tangents, TArray<FColor>* VertexColors);
+	void CreateSingleSquare(int32 x, int32 y, int32 z);
 
 	TArray<float> GenerateNoiseArray();
 	TArray<float> GeneratePerlinNoiseArray();
