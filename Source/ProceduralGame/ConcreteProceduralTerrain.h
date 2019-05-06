@@ -16,6 +16,9 @@ class PROCEDURALGAME_API AConcreteProceduralTerrain : public AProceduralTerrain
 	GENERATED_BODY()
 
 public:
+
+	AConcreteProceduralTerrain();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", Meta = (ExposeOnSpawn = true))
 		float lacunarity = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "1", UIMin = "1", ExposeOnSpawn = true))
@@ -25,10 +28,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perlin", meta = (ClampMin = "0.00000001", ClampMax = "1.0", UIMin = "0.0001", UIMax = "1.0", ExposeOnSpawn = true))
 		float persistence = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
-		UMaterialInterface* Material;
+		UMaterial* Material;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Procedural")
+		TArray<FColor> colors;
 	//array for the altitude
 	TArray<float> noise;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Noise")
+		bool diamondSquare;
+	//mesh elements
+	UPROPERTY()
+		TArray<FVector> Vertices;
+	UPROPERTY()
+		TArray<FVector> Normals;
+	UPROPERTY()
+		TArray<int32> Triangles;
+	UPROPERTY()
+		TArray<FVector2D> UVs;
+	UPROPERTY()
+		TArray<FColor> VertexColors;
+	UPROPERTY()
+		TArray<FProcMeshTangent> Tangents;
 
+
+	void ClearMeshData();
 	void OnConstruction(const FTransform & Transform) override;
 
 	void UpdateMesh();
@@ -39,14 +61,8 @@ public:
 
 	int32 GenerateNoise(int32 x, int32 y, int32 z);
 
-	void UpdateMeshPlain();
-
-	void UpdateMeshFirstVertices(int section);
-
 	void CreateSingleSquareSection(int section);
-	void CreateSingleSquare(int32 x, int32 y, int32 z, TArray<FVector>* Vertices, TArray<int32>* Triangles, TArray<FVector>* Normals, TArray<FVector2D>* UVs, TArray<FProcMeshTangent>* Tangents, TArray<FColor>* VertexColors);
-	//loop with +4
-	void UpdateMesh4();
+	void CreateSingleSquare(int32 x, int32 y, int32 z);
 
 	TArray<float> GenerateNoiseArray();
 	TArray<float> GeneratePerlinNoiseArray();
@@ -67,4 +83,7 @@ public:
 	/*UFUNCTION(BlueprintNativeEvent, category="Procedural")
 	TArray<float> SmoothNoise(TArray<float> noise);
 	virtual TArray<float> SmoothNoise_Implementation(TArray<float> noise);*/
+
+	FColor ComputeVertexColor(float height);
+	FColor ComputeVertexColor(FVector vertex);
 };

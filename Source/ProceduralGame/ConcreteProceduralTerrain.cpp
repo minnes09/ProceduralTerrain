@@ -5,6 +5,21 @@
 #include "Engine.h"
 #include "ConcreteProceduralTerrain.h"
 
+AConcreteProceduralTerrain::AConcreteProceduralTerrain() 
+{
+
+	proceduralComponent = CreateDefaultSubobject<UProceduralMeshComponent>("ProceduralMeshComponent");
+	/*static ConstructorHelpers::FObjectFinder<UMaterial> MaterialOb(TEXT("Material'/Game/Blueprints/ChunkTerrain.ChunkTerrain'"));
+	Material = MaterialOb.Object;*/
+	colors.Add(FColor(255, 23, 7));
+	colors.Add(FColor(141, 182, 7));
+	colors.Add(FColor(0, 132, 255));
+	colors.Add(FColor(255, 250, 250));
+
+	FString string = "Voxel: " + FString::FromInt(chunkXIndex) + "_" + FString::FromInt(chunkYIndex);
+	FName name = FName(*string);
+}
+
 void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 {
 	/*int x = chunkLineElements - 1;
@@ -12,159 +27,80 @@ void AConcreteProceduralTerrain::OnConstruction(const FTransform & Transform)
 	while ( n % FMath::FloorToInt(n) != 0) {
 		chunkLineElements++;
 	}*/
+
 	chunkZElements = 80;
 	chunkTotalElements = chunkLineElements * chunkLineElements * chunkZElements;
 	chunkLineElementsP2 = chunkLineElements * chunkLineElements;
 	voxelSizeHalf = voxelSize / 2;
-	noise.Init(0, chunkLineElementsP2);
-	FString string = "Voxel: " + FString::FromInt(chunkXIndex) + "_" + FString::FromInt(chunkYIndex);
-	FName name = FName(*string);
-	proceduralComponent = NewObject<UProceduralMeshComponent>(this, name);
-	proceduralComponent->RegisterComponent();
 
-
+	ClearMeshData();
+	
 	RootComponent = proceduralComponent;
-	RootComponent->SetWorldTransform(Transform); //set position of root component
+	//RootComponent->SetWorldTransform(Transform); //set position of root component
 												 //worldLocation = RootComponent->GetComponentLocation();
 	Super::Super::OnConstruction(Transform);
 
-	GenerateChunck();
+	//GenerateChunck();
 	UpdateMesh();
 }
 void AConcreteProceduralTerrain::UpdateMesh() {
 	
-	TArray<FVector> Vertices;
+	/*TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<FVector> Normals;
 	TArray<FVector2D> UVs;
 	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColors;
+	TArray<FColor> VertexColors;*/
+	if(diamondSquare)
+		noise = GenerateSquareNoiseArray();
+	else
+		noise = GeneratePerlinNoiseArray();
 
-	//noise = GenerateSquareNoiseArray();
-	noise = GeneratePerlinNoiseArray();
+	float uvSpacing = 1.0f / chunkLineElements;
+
 	for (int32 i = 0; i < chunkLineElements; i++) {
 		for (int32 j = 0; j < chunkLineElements; j++) {
 			//float z = USimplexNoiseLibrary::SimplexNoise2D(i * chunkLineElements, j) * 1000;
 			float noiseHeight = noise[i * chunkLineElements + j];
 			Vertices.Add(FVector(i * voxelSize, j * voxelSize, noiseHeight));
-			int32 c = FMath::Lerp(255,0, noiseHeight);
-			FColor color = FColor(c, c, c);
-			VertexColors.Add(color);
+			UVs.Add(FVector2D(i * uvSpacing, j * uvSpacing));
+			VertexColors.Add(ComputeVertexColor(noiseHeight));
+			Tangents.Add(FProcMeshTangent(1.0f, 0.0f, 0.0f));
+			Normals.Add(FVector(0.f, 0.f, 1.f));
 		}
 	}
-	int32 tri_length = Vertices.Num() - chunkLineElements - 1;
+	//int32 tri_length = Vertices.Num() - chunkLineElements - 1;
 
 	//loop for triangles, I arrive at length -1 so I skip the borders
 	for (int32 x = 0; x < chunkLineElements - 1; x++) {
 		for (int32 y = 0; y < chunkLineElements - 1; y++) {
 			int32 realX = x * chunkLineElements;
-			Triangles.Add(realX + chunkLineElements + y + 1); //(x + 1), (y + 1)
-			Triangles.Add(realX + chunkLineElements + y); //(x + 1), y
-			Triangles.Add(realX + y);//x, y
-			Triangles.Add(realX + y);//x, y
-			Triangles.Add(realX + y + 1); //x, (y + 1)
-			Triangles.Add(realX + chunkLineElements + y + 1);//(x + 1), (y + 1)
+			Triangles.Add(realX + chunkLineElements + y + 1); //(x + 1), (y + 1): C
+			Triangles.Add(realX + chunkLineElements + y); //(x + 1), y: B
+			Triangles.Add(realX + y);//x, y: A
+			Triangles.Add(realX + y);//x, y: A
+			Triangles.Add(realX + y + 1); //x, (y + 1): D
+			Triangles.Add(realX + chunkLineElements + y + 1);//(x + 1), (y + 1): C
+
+			FVector* vA = &Vertices[realX + y];
+			FVector* vB = &Vertices[realX + chunkLineElements + y];
+			FVector* vC = &Vertices[realX + chunkLineElements + y + 1];
+			FVector* vD = &Vertices[realX + y + 1];
+
+			FVector n = FVector::CrossProduct(*vC - *vB, *vA - *vB);
+			n.Normalize();
+			Normals[realX + y] = n;
+			Normals[realX + chunkLineElements + y] = n;
+			Normals[realX + chunkLineElements + y + 1] = n;
+			Normals[realX + y + 1] = n;
 		}
 	}
 
-	proceduralComponent->ClearAllMeshSections();
+	//proceduralComponent->ClearAllMeshSections();
 	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
+	//proceduralComponent->CreateMeshSection_LinearColor(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
 	proceduralComponent->SetMaterial(0, Material);
 	//UpdateMeshFirstVertices(0);
-}
-
-void AConcreteProceduralTerrain::UpdateMeshPlain()
-{
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColors;
-
-	int32 index = 0;
-	int32 elementID = 0;
-	for (int32 x = 0; x < chunkLineElements; x++)
-	{
-		for (int32 y = 0; y < chunkLineElements; y++)
-		{
-			index++;
-			float z = chunkFields[index];
-
-			//add faces, vertices, UVs and normals
-			int triangle_num = 0;
-			if (isFaceVisible()) {
-				//vertices
-				Vertices.Add(FVector(voxelSize * x, voxelSize * y, voxelSize * z));
-				Vertices.Add(FVector(voxelSize * (x + 1), voxelSize * y, voxelSize * z));
-				Vertices.Add(FVector(voxelSize * (x + 1), voxelSize * (y + 1), voxelSize * z));
-				Vertices.Add(FVector(voxelSize * x, voxelSize * (y + 1), voxelSize * z));
-
-				Triangles.Add(2 + triangle_num + elementID);
-				Triangles.Add(1 + triangle_num + elementID);
-				Triangles.Add(0 + triangle_num + elementID);
-				Triangles.Add(0 + triangle_num + elementID);
-				Triangles.Add(3 + triangle_num + elementID);
-				Triangles.Add(2 + triangle_num + elementID);
-				triangle_num += 4;
-							
-				
-
-				//UVs.Append(bUvs, ARRAY_COUNT(bUvs));
-				//FColor color = FColor(RandomStream.FRand() * 256, RandomStream.FRand() * 256, RandomStream.FRand() * 256, rand() % 5);
-				FColor color = FColor(255, 255, 255, 1);
-				VertexColors.Add(color);
-				VertexColors.Add(FColor::White);
-				VertexColors.Add(FColor::Blue);
-				VertexColors.Add(FColor::Emerald);
-				}
-			elementID += 4;
-			}
-	}
-	proceduralComponent->ClearAllMeshSections();
-	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
-	UpdateMesh4();
-}
-
-void AConcreteProceduralTerrain::UpdateMesh4() {
-
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColors;
-
-	noise = GenerateNoiseArray();
-	//noise = SmoothNoise(noise);
-	int32 index = 0;
-	for (int32 x = 0; x < chunkLineElements; x += 4) {
-		for (int32 y = 0; y < chunkLineElements; y += 4)
-		{
-			index = x * chunkLineElements + y;
-			if (isFaceVisible()) {
-				//vertices
-				Vertices.Add(FVector(voxelSize * x, voxelSize * y, voxelSize * noise[index]));
-				Vertices.Add(FVector(voxelSize * (x + 1), voxelSize * y, voxelSize * noise[index + 1]));
-				Vertices.Add(FVector(voxelSize * (x + 1), voxelSize * (y + 1), voxelSize * noise[index + 2]));
-				Vertices.Add(FVector(voxelSize * x, voxelSize * (y + 1), voxelSize * noise[index + 3]));
-
-				Triangles.Add(2 + index);
-				Triangles.Add(1 + index);
-				Triangles.Add(0 + index);
-				Triangles.Add(0 + index);
-				Triangles.Add(3 + index);
-				Triangles.Add(2 + index);
-
-				FColor color = FColor(255, 255, 255, 1);
-				VertexColors.Add(color);
-				VertexColors.Add(color);
-				VertexColors.Add(color);
-				VertexColors.Add(color);
-			}
-		}
-		proceduralComponent->CreateMeshSection(1, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
-	}
 }
 
 //size must be multiple of 2
@@ -235,8 +171,8 @@ TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 	FRandomStream RngStream = FRandomStream::FRandomStream(randomSeed);
 	TArray<FVector2D> octaveOffset;
 	for (int i = 0; i < iterations; i++) {
-		float offsetX = RngStream.FRandRange(-10000, 10000);
-		float offsetY = RngStream.FRandRange(-10000, 10000);
+		float offsetX = RngStream.FRandRange(-freq, freq);
+		float offsetY = RngStream.FRandRange(-freq, freq);
 		octaveOffset.Add(FVector2D(offsetX, offsetY));
 	}
 	
@@ -259,7 +195,7 @@ TArray<float> AConcreteProceduralTerrain::GeneratePerlinNoiseArray() {
 				amplitude *= persistence;
 				frequency *= lacunarity;
 			}
-			noise[index] = noiseHeight * maxAltitude;
+			noise[index] = noiseHeight *maxAltitude;
 		}
 	}
 	return noise;
@@ -397,67 +333,28 @@ float AConcreteProceduralTerrain::PseudoRandomOffset(float x, float y)
 	return (cosX + sinX + cosY);
 }
 
-/*
-TArray<float> AConcreteProceduralTerrain::SmoothNoise_Implementation(TArray<float> noise)
+FColor AConcreteProceduralTerrain::ComputeVertexColor(float h)
 {
-	//remember to call super / parent function in BP!
-	FString  PickupDebugString = GetName();
-	UE_LOG(LogClass, Log, TEXT("You are smoothing %s"), *PickupDebugString);
-	return noise;
+	int32 c = 255 * h / maxAltitude;
+	/*auto numColors = colors.Num();
+	int32 pos = 0;
+	int32 biomeDivisor = maxAltitude / numColors;
+	for (int32 i = -numColors; i < numColors; i=i+2, pos++) {
+		if (h <= i * biomeDivisor) return colors[pos];
+	}
+	return colors[numColors -1];*/
+	return FColor(c, c, c, 1.f);
 }
-*/
-void AConcreteProceduralTerrain::UpdateMeshFirstVertices(int section) { //WORKS
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColors;
 
-	//noise = GenerateSquareNoiseArray();
-	noise = GeneratePerlinNoiseArray();
-	FColor color = FColor::Blue;
-	for (int32 i = 0; i < chunkLineElements; i++) {
-		for (int32 j = 0; j < chunkLineElements; j++) {
-			//float z = USimplexNoiseLibrary::SimplexNoise2D(i * chunkLineElements, j) * 1000;
-			Vertices.Add(FVector(i * voxelSize, j * voxelSize, noise[i * chunkLineElements + j]));
-			VertexColors.Add(color);
-		}
-	}
-	int32 tri_length = Vertices.Num() - chunkLineElements - 1;
-
-	/*Triangles.Add(chunkLineElements); //(x + 1) + (y + 1)
-	Triangles.Add(1); //(x + 1) + y
-	Triangles.Add(0);
-	Triangles.Add(0);
-	Triangles.Add(chunkLineElements + 1); //x + (y + 1)
-	Triangles.Add(chunkLineElements);*/
-
-	for (int32 x = 0; x < chunkLineElements; x ++) {
-		for (int32 y = 0; y < chunkLineElements; y++) {
-			int32 realX = x * chunkLineElements;
-			Triangles.Add(realX + chunkLineElements + y + 1); //(x + 1), (y + 1)
-			Triangles.Add(realX + chunkLineElements + y); //(x + 1), y
-			Triangles.Add(realX + y);//x, y
-			Triangles.Add(realX + y);//x, y
-			Triangles.Add(realX + y + 1); //x, (y + 1)
-			Triangles.Add(realX + chunkLineElements + y + 1);//(x + 1), (y + 1)
-		}
-	}
+FColor AConcreteProceduralTerrain::ComputeVertexColor(FVector normal)
+{
+	float ripidness = FVector::DotProduct(FVector(0.f, 0.f, 1.f), normal) / 2;
 	
 
-	proceduralComponent->ClearAllMeshSections();
-	proceduralComponent->CreateMeshSection(section, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
-	proceduralComponent->SetMaterial(0, Material);
+	return FColor();
 }
 
 void AConcreteProceduralTerrain::CreateSingleSquareSection(int section) {
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColors;
 
 	/*Vertices.Add(FVector(chunkLineElements * voxelSize, chunkLineElements * voxelSize, voxelSize * 10));
 	Vertices.Add(FVector((chunkLineElements + 1) * voxelSize, chunkLineElements * voxelSize, voxelSize * 10));
@@ -479,7 +376,7 @@ void AConcreteProceduralTerrain::CreateSingleSquareSection(int section) {
 	int32 z = 0;
 	for (int32 x = 0; x < chunkLineElements; x++) {
 		for (int32 y = 0; y < chunkLineElements; y++) {
-			CreateSingleSquare(x, y, z, &Vertices, &Triangles, &Normals, &UVs, &Tangents, &VertexColors);
+			CreateSingleSquare(x, y, z);
 			z++;
 		}
 	}
@@ -487,26 +384,35 @@ void AConcreteProceduralTerrain::CreateSingleSquareSection(int section) {
 	proceduralComponent->CreateMeshSection(section, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
 }
 
-void AConcreteProceduralTerrain::CreateSingleSquare(int32 x, int32 y, int32 z, TArray<FVector> * Vertices, TArray<int32> * Triangles, TArray<FVector> * Normals, TArray<FVector2D> * UVs, TArray<FProcMeshTangent> * Tangents, TArray<FColor> * VertexColors) {
-	Vertices->Add(FVector(1, 1, 1));
+void AConcreteProceduralTerrain::CreateSingleSquare(int32 x, int32 y, int32 z) {
+	
+	Vertices.Add(FVector(x * voxelSize, y * voxelSize, voxelSize * z));
+	Vertices.Add(FVector((x + 1) * voxelSize, y * voxelSize, voxelSize * z));
+	Vertices.Add(FVector((x + 1) * voxelSize, (y + 1) * voxelSize, voxelSize * z));
+	Vertices.Add(FVector(x * voxelSize, (y + 1)  * voxelSize, voxelSize * z));
 
-	int32 verticesLength = Vertices->Num();
-	Vertices->Add(FVector(x * voxelSize, y * voxelSize, voxelSize * z));
-	Vertices->Add(FVector((x + 1) * voxelSize, y * voxelSize, voxelSize * z));
-	Vertices->Add(FVector((x + 1) * voxelSize, (y + 1) * voxelSize, voxelSize * z));
-	Vertices->Add(FVector(x * voxelSize, (y + 1)  * voxelSize, voxelSize * z));
-
-	Triangles->Add(2);
-	Triangles->Add(1);
-	Triangles->Add(0);
-	Triangles->Add(0);
-	Triangles->Add(3);
-	Triangles->Add(2);
+	Triangles.Add(2);
+	Triangles.Add(1);
+	Triangles.Add(0);
+	Triangles.Add(0);
+	Triangles.Add(3);
+	Triangles.Add(2);
 
 	FColor color = FColor(255, 255, 255, 1);
-	VertexColors->Add(color);
-	VertexColors->Add(color);
-	VertexColors->Add(color);
-	VertexColors->Add(color);
+	VertexColors.Add(color);
+	VertexColors.Add(color);
+	VertexColors.Add(color);
+	VertexColors.Add(color);
 
+}
+
+void AConcreteProceduralTerrain::ClearMeshData()
+{
+	Vertices.Empty();
+	Triangles.Empty();
+	UVs.Empty();
+	Normals.Empty();
+	VertexColors.Empty();
+	Tangents.Empty();
+	noise.Init(0, chunkLineElementsP2);
 }
